@@ -48,9 +48,7 @@ old one. There is no "Revoke key" button yet.
 Removing the folder does not clear the Site and key: EDMC keeps them in its own settings (`edeng_host` and
 `edeng_key`) and the plugin has no button to clear them, so they stay there.
 
-**Problems:** report them at https://github.com/majorxp00/EDMC-Engineering/issues. For a security
-problem, members can use the Feedback page on ed.golegend.com; anyone else can open an issue that says
-only that there is a security report, with no details, and the maintainer will arrange a private route.
+**Problems:** report them at https://github.com/majorxp00/EDMC-Engineering/issues.
 
 ## Change history
 
