@@ -1,6 +1,6 @@
 # EDMC-Engineering
 
-An EDMarketConnector (EDMC) plugin for https://ed.golegend.com, an invite-only Elite Dangerous engineering planner. It sends your journal events to that site as the game writes them, so your ships, materials and progress there stay current without you re-uploading your journal folder.
+An EDMarketConnector (EDMC) plugin for https://ed.golegend.com, an Elite Dangerous engineering planner. It sends your journal events to that site as the game writes them, so your ships, materials and progress there stay current without you re-uploading your journal folder.
 
 Version 0.6.8 (`VERSION` in `load.py`).
 
@@ -12,9 +12,8 @@ journal events to it.
 
 1. **Install EDMC** (EDMarketConnector, current stable release from
    https://github.com/EDCD/EDMarketConnector/releases) if you do not have it.
-2. **Get an account.** Registration needs an invite code from an existing member: they open
-   **Account**, then **Invite someone**, and send you the code. A code works once and lasts 7
-   days. On https://ed.golegend.com choose **Have an invite code? Create an account.** and enter it.
+2. **Get an account.** On
+   https://ed.golegend.com choose **New here? Create an account.**
 3. **Upload your journal folder** on the site once. The plugin adds live events on top of it.
 4. **Get your plugin key.** On the site open **Account** and choose **Create key**. It is **shown
    once**, so copy it now.
