@@ -67,7 +67,7 @@ logger = logging.getLogger('%s.%s' % (appname, os.path.basename(os.path.dirname(
 
 PLUGIN_NAME = 'EDMC-Engineering'
 DEFAULT_HOST = 'https://ed.golegend.com'   # pre-fills Site; a saved value always wins
-VERSION = '0.6.8'
+VERSION = '0.6.9'
 
 # The events the server's journal reader consumes. Anything else is not sent: a plugin that
 # forwarded the whole journal would ship far more than the tool uses. Most are sent whole; Location,
@@ -410,19 +410,17 @@ def plugin_app(parent):
     S.status_var = tk.StringVar(value=S.status)
     S.detail_var = tk.StringVar(value='')
     tk.Label(frame, text='Engineering:').grid(row=0, column=0, sticky=tk.W)
-    tk.Label(frame, textvariable=S.status_var).grid(row=0, column=1, sticky=tk.W, padx=4)
+    tk.Label(frame, textvariable=S.status_var).grid(row=0, column=1, sticky=tk.W, padx=(2, 0))
     S.detail_label = tk.Label(frame, textvariable=S.detail_var, wraplength=DETAIL_WRAP, justify=tk.LEFT)
-    S.detail_label.grid(row=1, column=0, columnspan=2, sticky=tk.W)
+    frame.grid_columnconfigure(2, weight=1)   # spare width goes to a spare column, never between 'Engineering:' and its value
+    S.detail_label.grid(row=1, column=0, columnspan=3, sticky=tk.W)
     S.detail_label.grid_remove()   # one quiet line: the second row appears only with something to say
     # Destinations (0.3.0): hidden until the first one arrives, so EDMC's window gets no blank row.
     S.dest_var = tk.StringVar(value=S.dest_text)
     S.dest_label = tk.Label(frame, textvariable=S.dest_var)
-    S.dest_label.grid(row=2, column=0, columnspan=2, sticky=tk.W)
-    S.dest_button = tk.Button(frame, text='Copy', command=_copy_again)
-    S.dest_button.grid(row=2, column=2, sticky=tk.W, padx=4)
+    S.dest_label.grid(row=2, column=0, columnspan=3, sticky=tk.W)
     if not S.dest_text:
         S.dest_label.grid_remove()
-        S.dest_button.grid_remove()
     # The sender runs on its own thread and must never touch these StringVars (Tkinter is single
     # threaded; a cross-thread .set() raises and, uncaught, kills the sender so the queue stops
     # draining). Repaint here on EDMC's UI thread instead, once a second, from plain state the
@@ -1277,13 +1275,12 @@ def _parse_destination(value):
     return {'id': did, 'system': system, 'station': station}
 
 
-def _destination_line(d, copied):
-    """'Destination: Liu Yines, copied (Baraniecki Orbital)' — no station drops the '(…)'. A copy
-    that failed says so plainly instead, with the station still named."""
-    tail = ' (%s)' % d['station'] if d.get('station') else ''
-    if copied:
-        return 'Destination: %s, copied%s' % (d['system'], tail)
-    return 'Destination: %s (could not copy: type it in)%s' % (d['system'], tail)
+def _destination_line(d, copied=True):
+    """'Baraniecki Orbital | Liu Yines' (docking location | system name); no station shows the
+    system alone. No label and no word about copying; `copied` is kept only for old callers."""
+    if d.get('station'):
+        return '%s | %s' % (d['station'], d['system'])
+    return d['system']
 
 
 def _offer_destination(d):
@@ -1308,18 +1305,6 @@ def _copy_to_clipboard(text):
         return False
 
 
-def _copy_again():
-    """UI thread only (runs from the Copy button). Copies the shown system again and updates the
-    line. Sends no ack (the site already has one) and touches no worker state."""
-    d = S.dest_shown
-    if not d:
-        return
-    copied = _copy_to_clipboard(d['system'])
-    S.dest_text = _destination_line(d, copied)
-    if S.dest_var is not None:
-        S.dest_var.set(S.dest_text)
-
-
 def _take_destination():
     """Main-thread repaint, called from _tick before _set_status: drains the worker's queue,
     keeping only the newest destination, shows and copies it, and hands the worker an ack to send
@@ -1341,8 +1326,6 @@ def _take_destination():
         S.dest_var.set(S.dest_text)
     if S.dest_label is not None:
         S.dest_label.grid()
-    if S.dest_button is not None:
-        S.dest_button.grid()
     with S.lock:
         S.dest_ack = {'id': d['id'], 'copied': copied}
     S.outbox.put('send')   # a thread-safe queue, not Tk: wakes the worker so the ack lands in about a second

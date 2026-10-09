@@ -2,7 +2,7 @@
 
 An EDMarketConnector (EDMC) plugin for https://ed.golegend.com, an Elite Dangerous engineering planner. It sends your journal events to that site as the game writes them, so your ships, materials and progress there stay current without you re-uploading your journal folder.
 
-Version 0.6.8 (`VERSION` in `load.py`).
+Version 0.6.9 (`VERSION` in `load.py`).
 
 
 ## Installing it
@@ -50,5 +50,7 @@ Removing the folder does not clear the Site and key: EDMC keeps them in its own 
 **Problems:** report them at https://github.com/majorxp00/EDMC-Engineering/issues.
 
 ## Change history
+
+0.6.9: the EDMC line no longer has a gap after Engineering:, the destination shows as `station | system` with no label, no Copied word and no Copy button (it is still put on the clipboard automatically).
 
 0.6.8: odd site replies are checked (impossible counts keep the batch, site text is bounded), a destination id with control characters is refused, a stuck sender is shown on the EDMC line, the startup read can no longer overwrite a live commander, and the queue file carries a format version.
